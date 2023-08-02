@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from extensions import db
-from models import User, Data, Plug
+from .extensions import db
+from .models import User, Data, Plug
 from sqlalchemy import func
 
 main = Blueprint('main', __name__)
