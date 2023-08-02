@@ -1,4 +1,4 @@
-from extensions import db 
+from .extensions import db 
 
 class Data(db.Model):
     db_id = db.Column(db.Integer, primary_key=True)
