@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from .extensions import db
-from .models import User, Data, Plug
+from extensions import db
+from models import User, Data, Plug
 from sqlalchemy import func
 
 main = Blueprint('main', __name__)
@@ -75,6 +75,7 @@ def calculate_and_control_plugs():
     # Calculate the total power demand and create a dictionary to store the calculated df for each plug
     total_demand = 0
     df_dict = {}
+    power_dict  = {}
     for client_id, plug_data in plugs.items():
         voltage = plug_data.get('voltage', 0)
         current = plug_data.get('current', 0)
@@ -83,17 +84,22 @@ def calculate_and_control_plugs():
         humidity = plug_data.get('humidity', 0)
 
         power = voltage * current
+        power_dict[client_id]=power
         total_demand += power
         df = ((4 - internal_temp) * humidity) / ambient_temp
         df_dict[client_id] = df
 
     # Calculate the loads with df > dfref and determine which plugs to shut off
-    dfref = 0.5  # You can adjust the threshold value as needed
+    dfref = 1  # You can adjust the threshold value as needed
     loads_to_shut_off = [client_id for client_id, df in df_dict.items() if df > dfref]
+    power_to_be_taken_off = 0
+    for i in loads_to_shut_off:
+        power_to_be_taken_off += power_dict[i]
 
     # Check if shutting off high df loads can meet the supply
-    remaining_supply_after_shutoff = total_supply - sum(df_dict[client_id] for client_id in loads_to_shut_off)
-    if remaining_supply_after_shutoff < 0:
+    remaining_supply_after_shutoff = total_demand - power_to_be_taken_off
+
+    if remaining_supply_after_shutoff > total_supply:
         # If shutting off high df loads is not enough, try to shut off lower df loads
         loads_to_shut_off = [client_id for client_id, df in df_dict.items() if df > 0]
         remaining_supply_after_shutoff = total_supply - sum(df_dict[client_id] for client_id in loads_to_shut_off)
@@ -119,6 +125,7 @@ def turn_plug_off():
         return jsonify({'error': 'Client ID is missing in the request.'}), 400
 
     plug = Plug.query.filter_by(client_id=client_id).first()
+    print(plug)
 
     if plug is None:
         return jsonify({'error': 'Plug data not found for the given client_id.'}), 404
