@@ -84,17 +84,19 @@ def calculate_and_control_plugs():
         humidity = plug_data.get('humidity', 0)
 
         power = voltage * current
-        power_dict[client_id]=power
+        power_dict[client_id] = power
         total_demand += power
         df = ((4 - internal_temp) * humidity) / ambient_temp
         df_dict[client_id] = df
 
+    # Check if total demand is higher than total supply
+    if total_demand <= total_supply:
+        return jsonify({'shut_off_clients': []})
+
     # Calculate the loads with df > dfref and determine which plugs to shut off
     dfref = 1  # You can adjust the threshold value as needed
     loads_to_shut_off = [client_id for client_id, df in df_dict.items() if df > dfref]
-    power_to_be_taken_off = 0
-    for i in loads_to_shut_off:
-        power_to_be_taken_off += power_dict[i]
+    power_to_be_taken_off = sum(power_dict[i] for i in loads_to_shut_off)
 
     # Check if shutting off high df loads can meet the supply
     remaining_supply_after_shutoff = total_demand - power_to_be_taken_off
