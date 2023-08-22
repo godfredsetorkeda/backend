@@ -3,8 +3,6 @@ from .extensions import db
 from .models import User, Data, Plug
 from sqlalchemy import func
 
-app = Flask(__name__)
-
 main = Blueprint('main', __name__)
 
 @main.route('/get_data', methods=['POST'])
