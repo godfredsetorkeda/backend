@@ -1,7 +1,11 @@
 from flask import Blueprint, request, jsonify
+from flask_cors import CORS  # Import CORS from flask_cors
 from .extensions import db
 from .models import User, Data, Plug
 from sqlalchemy import func
+
+app = Flask(__name__)
+CORS(app)  # Enable CORS for your entire app
 
 main = Blueprint('main', __name__)
 
