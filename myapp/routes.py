@@ -84,19 +84,17 @@ def calculate_and_control_plugs():
         humidity = plug_data.get('humidity', 0)
 
         power = voltage * current
-        power_dict[client_id] = power
+        power_dict[client_id]=power
         total_demand += power
         df = ((4 - internal_temp) * humidity) / ambient_temp
         df_dict[client_id] = df
 
-    # Check if total demand is higher than total supply
-    if total_demand <= total_supply:
-        return jsonify({'shut_off_clients': []})
-
     # Calculate the loads with df > dfref and determine which plugs to shut off
     dfref = 1  # You can adjust the threshold value as needed
     loads_to_shut_off = [client_id for client_id, df in df_dict.items() if df > dfref]
-    power_to_be_taken_off = sum(power_dict[i] for i in loads_to_shut_off)
+    power_to_be_taken_off = 0
+    for i in loads_to_shut_off:
+        power_to_be_taken_off += power_dict[i]
 
     # Check if shutting off high df loads can meet the supply
     remaining_supply_after_shutoff = total_demand - power_to_be_taken_off
@@ -187,7 +185,7 @@ def average_ambient_temp_graph_data():
             .all()
 
         # Format data for D3.js
-        graph_data = [{'time': str(row[0]), 'average_ambient_temp': row[1]} for row in avg_temp_query]
+        graph_data = [{'time': str(row[0])[11:][:-10], 'average_ambient_temp': row[1]} for row in avg_temp_query]
 
         return jsonify(graph_data)
     except Exception as e:
@@ -212,9 +210,9 @@ def average_internal_temp_graph_data():
             .group_by(Data.time) \
             .order_by(Data.time.asc()) \
             .all()
-
+        
         # Format data for D3.js
-        graph_data = [{'time': str(row[0]), 'average_internal_temp': row[1]} for row in avg_temp_query]
+        graph_data = [{'time': str(row[0])[11:][:-10], 'average_internal_temp': row[1]} for row in avg_temp_query]
 
         return jsonify(graph_data)
     except Exception as e:
@@ -225,8 +223,13 @@ def average_internal_temp_graph_data():
 @main.route('/total_power_consumption', methods=['GET'])
 def total_power_consumption():
     try:
+        total_power_queried = 0
+        for x in range(1,11):
+            data = Data.query.filter_by(client_id=x).first()
+            total_power_queried += data.voltage * data.current
+
         total_power = db.session.query(db.func.sum(Data.voltage * Data.current)).scalar()
-        return jsonify({'total_power_consumption': total_power})
+        return jsonify({'total_power_consumption': total_power_queried})
     except Exception as e:
         return jsonify({'error': 'Failed to calculate total power consumption.'}), 500
 
@@ -241,7 +244,7 @@ def total_power_graph_data():
             .all()
 
         # Format data for D3.js
-        graph_data = [{'time': str(row[0]), 'total_power': row[1]} for row in total_power_query]
+        graph_data = [{'time': str(row[0])[11:][:-10], 'total_power': row[1]} for row in total_power_query]
 
         return jsonify(graph_data)
     except Exception as e:
