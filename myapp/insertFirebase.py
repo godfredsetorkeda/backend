@@ -9,7 +9,8 @@ from .extensions import dbA
 from .models import User, Data, Plug
 
 # Initialize Firebase Admin SDK
-cred = credentials.Certificate(os.environ("FIREBASE_PATH"))
+FIREBASE_PATH = os.environ("FIREBASE_PATH")
+cred = credentials.Certificate(FIREBASE_PATH)
 firebase_admin.initialize_app(cred, {"databaseURL": "https://gsk-smartplug-default-rtdb.firebaseio.com"})
 
 # Set up PostgreSQL connection
