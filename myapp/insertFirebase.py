@@ -23,10 +23,11 @@ cred = credentials.Certificate({
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-96fyi%40gsk-smartplug.iam.gserviceaccount.com",
   "universe_domain": "googleapis.com"
 })
+
 firebase_admin.initialize_app(cred, {"databaseURL": "https://gsk-smartplug-default-rtdb.firebaseio.com"})
 
 # Set up PostgreSQL connection
-DATABASE_URL = os.environ("DATABASE_URL")
+DATABASE_URL = os.environ.get("DATABASE_URL")
 #"postgresql://group3_backend_user:077oq8E0QGu2xpRT8jLA56NsRSViblhI@dpg-cj4li545kgrc739pljrg-a.oregon-postgres.render.com/group3_backend"
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
