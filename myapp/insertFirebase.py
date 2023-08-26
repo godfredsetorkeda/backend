@@ -5,8 +5,8 @@ import random
 from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from extensions import dbA
-from models import User, Data, Plug
+from .extensions import dbA
+from .models import User, Data, Plug
 
 # Initialize Firebase Admin SDK
 cred = credentials.Certificate("gsk-smartplug-firebase-adminsdk-96fyi-cd6ccffd66.json")
