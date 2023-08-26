@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from .extensions import db
+from .extensions import dbA
 from .models import User, Data, Plug
 from sqlalchemy import func
 
@@ -41,11 +41,11 @@ def update_relay_status():
     plug = Plug.query.first()
     if plug is None:
         plug = Plug(statusOfRelay=status_value)
-        db.session.add(plug)
+        dbA.session.add(plug)
     else:
         plug.statusOfRelay = status_value
 
-    db.session.commit()
+    dbA.session.commit()
     return jsonify({'message': 'Relay status updated successfully.'})
 
 @main.route('/check_plug_state', methods=['POST'])
@@ -110,7 +110,7 @@ def calculate_and_control_plugs():
         plug = Plug.query.filter_by(client_id=client_id).first()
         if plug:
             plug.stateOfRelay = "off"
-            db.session.commit()
+            dbA.session.commit()
             shut_off_clients.append(client_id)
 
     return jsonify({'shut_off_clients': shut_off_clients})
@@ -134,10 +134,10 @@ def turn_plug_off():
     plug.stateOfRelay = "0"
 
     try:
-        db.session.commit()
+        dbA.session.commit()
         return jsonify({'message': 'Plug state updated to off.'})
     except Exception as e:
-        db.session.rollback()
+        dbA.session.rollback()
         return jsonify({'error': 'Failed to update plug state.'}), 500
 
 #Close Relay
@@ -158,10 +158,10 @@ def turn_plug_on():
     plug.stateOfRelay = "1"
 
     try:
-        db.session.commit()
+        dbA.session.commit()
         return jsonify({'message': 'Plug state updated to on.'})
     except Exception as e:
-        db.session.rollback()
+        dbA.session.rollback()
         return jsonify({'error': 'Failed to update plug state.'}), 500
 
 #Return Average ambTemp value
@@ -169,7 +169,7 @@ def turn_plug_on():
 @main.route('/average_ambient_temp', methods=['GET'])
 def average_ambient_temp():
     try:
-        total_ambient_temp = db.session.query(db.func.avg(Data.ambient_temp)).scalar()
+        total_ambient_temp = dbA.session.query(dbA.func.avg(Data.ambient_temp)).scalar()
         return jsonify({'average_ambient_temp': total_ambient_temp})
     except Exception as e:
         return jsonify({'error': 'Failed to calculate average ambient temperature.'}), 500
@@ -179,7 +179,7 @@ def average_ambient_temp():
 def average_ambient_temp_graph_data():
     try:
         # Query to get unique timestamps and their corresponding average ambient temperature
-        avg_temp_query = db.session.query(Data.time, func.avg(Data.ambient_temp)) \
+        avg_temp_query = dbA.session.query(Data.time, func.avg(Data.ambient_temp)) \
             .group_by(Data.time) \
             .order_by(Data.time.asc()) \
             .all()
@@ -196,7 +196,7 @@ def average_ambient_temp_graph_data():
 @main.route('/average_internal_temp', methods=['GET'])
 def average_internal_temp():
     try:
-        total_internal_temp = db.session.query(db.func.avg(Data.internal_temp)).scalar()
+        total_internal_temp = dbA.session.query(dbA.func.avg(Data.internal_temp)).scalar()
         return jsonify({'average_internal_temp': total_internal_temp})
     except Exception as e:
         return jsonify({'error': 'Failed to calculate average internal temperature.'}), 500
@@ -206,7 +206,7 @@ def average_internal_temp():
 def average_internal_temp_graph_data():
     try:
         # Query to get unique timestamps and their corresponding average internal temperature
-        avg_temp_query = db.session.query(Data.time, func.avg(Data.internal_temp)) \
+        avg_temp_query = dbA.session.query(Data.time, func.avg(Data.internal_temp)) \
             .group_by(Data.time) \
             .order_by(Data.time.asc()) \
             .all()
@@ -228,7 +228,7 @@ def total_power_consumption():
             data = Data.query.filter_by(client_id=x).first()
             total_power_queried += data.voltage * data.current
 
-        total_power = db.session.query(db.func.sum(Data.voltage * Data.current)).scalar()
+        total_power = dbA.session.query(dbA.func.sum(Data.voltage * Data.current)).scalar()
         return jsonify({'total_power_consumption': total_power_queried})
     except Exception as e:
         return jsonify({'error': 'Failed to calculate total power consumption.'}), 500
@@ -238,7 +238,7 @@ def total_power_consumption():
 def total_power_graph_data():
     try:
         # Query to get unique timestamps and their corresponding total power consumption
-        total_power_query = db.session.query(Data.time, func.sum(Data.voltage * Data.current)) \
+        total_power_query = dbA.session.query(Data.time, func.sum(Data.voltage * Data.current)) \
             .group_by(Data.time) \
             .order_by(Data.time.asc()) \
             .all()
