@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from .extensions import dbA
 from .models import User, Data, Plug
 from sqlalchemy import func
+from .insertFirebase import insert_records
 
 main = Blueprint('main', __name__)
 
