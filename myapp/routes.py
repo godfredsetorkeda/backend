@@ -170,6 +170,7 @@ def turn_plug_on():
 @main.route('/average_ambient_temp', methods=['GET'])
 def average_ambient_temp():
     try:
+        insert_records()
         total_ambient_temp = dbA.session.query(dbA.func.avg(Data.ambient_temp)).scalar()
         return jsonify({'average_ambient_temp': total_ambient_temp})
     except Exception as e:
@@ -179,6 +180,7 @@ def average_ambient_temp():
 @main.route('/average_ambient_temp_graph_data', methods=['GET'])
 def average_ambient_temp_graph_data():
     try:
+        insert_records()
         # Query to get unique timestamps and their corresponding average ambient temperature
         avg_temp_query = dbA.session.query(Data.time, func.avg(Data.ambient_temp)) \
             .group_by(Data.time) \
@@ -197,6 +199,7 @@ def average_ambient_temp_graph_data():
 @main.route('/average_internal_temp', methods=['GET'])
 def average_internal_temp():
     try:
+        insert_records()
         total_internal_temp = dbA.session.query(dbA.func.avg(Data.internal_temp)).scalar()
         return jsonify({'average_internal_temp': total_internal_temp})
     except Exception as e:
@@ -206,6 +209,7 @@ def average_internal_temp():
 @main.route('/average_internal_temp_graph_data', methods=['GET'])
 def average_internal_temp_graph_data():
     try:
+        insert_records()
         # Query to get unique timestamps and their corresponding average internal temperature
         avg_temp_query = dbA.session.query(Data.time, func.avg(Data.internal_temp)) \
             .group_by(Data.time) \
@@ -224,6 +228,7 @@ def average_internal_temp_graph_data():
 @main.route('/total_power_consumption', methods=['GET'])
 def total_power_consumption():
     try:
+        insert_records()
         total_power_queried = 0
         for x in range(1,11):
             data = Data.query.filter_by(client_id=x).first()
@@ -238,6 +243,7 @@ def total_power_consumption():
 @main.route('/total_power_graph_data', methods=['GET'])
 def total_power_graph_data():
     try:
+        insert_records()
         # Query to get unique timestamps and their corresponding total power consumption
         total_power_query = dbA.session.query(Data.time, func.sum(Data.voltage * Data.current)) \
             .group_by(Data.time) \
