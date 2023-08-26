@@ -1,25 +1,25 @@
-from .extensions import db 
+from .extensions import dbA 
 
-class Data(db.Model):
-    db_id = db.Column(db.Integer, primary_key=True)
-    time = db.Column(db.DateTime)         # Timestamp of the data
-    client_id = db.Column(db.Integer)     # ID of the client
-    ambient_temp = db.Column(db.Float)    # Ambient temperature
-    current = db.Column(db.Float)         # Current value
-    internal_temp = db.Column(db.Float)   # Internal temperature
-    humidity = db.Column(db.Float)        # Humidity value
-    voltage = db.Column(db.Float)         # Voltage value
+class Data(dbA.Model):
+    db_id = dbA.Column(dbA.Integer, primary_key=True)
+    time = dbA.Column(dbA.DateTime)         # Timestamp of the data
+    client_id = dbA.Column(dbA.Integer)     # ID of the client
+    ambient_temp = dbA.Column(dbA.Float)    # Ambient temperature
+    current = dbA.Column(dbA.Float)         # Current value
+    internal_temp = dbA.Column(dbA.Float)   # Internal temperature
+    humidity = dbA.Column(dbA.Float)        # Humidity value
+    voltage = dbA.Column(dbA.Float)         # Voltage value
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(75))  #name of candidate
-    position = db.Column(db.String(150)) #admin, normal user
-    password = db.Column(db.String(150))
+class User(dbA.Model):
+    id = dbA.Column(dbA.Integer, primary_key=True)
+    name = dbA.Column(dbA.String(75))  #name of candidate
+    position = dbA.Column(dbA.String(150)) #admin, normal user
+    password = dbA.Column(dbA.String(150))
 
-class Plug(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    client_id = db.Column(db.String(75))  #name of candidate
-    stateOfRelay = db.Column(db.String(150))
+class Plug(dbA.Model):
+    id = dbA.Column(dbA.Integer, primary_key=True)
+    client_id = dbA.Column(dbA.String(75))  #name of candidate
+    stateOfRelay = dbA.Column(dbA.String(150))
     
 """
 # PostgreSQL database configuration for creating new tables
