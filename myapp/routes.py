@@ -185,7 +185,7 @@ def average_ambient_temp_graph_data():
             .all()
 
         # Format data for D3.js
-        graph_data = [{'time': str(row[0])[11:][:-10], 'average_ambient_temp': row[1]} for row in avg_temp_query]
+        graph_data = [{'time': str(row[0])[11:16], 'average_ambient_temp': row[1]} for row in avg_temp_query]
 
         return jsonify(graph_data)
     except Exception as e:
@@ -212,7 +212,7 @@ def average_internal_temp_graph_data():
             .all()
         
         # Format data for D3.js
-        graph_data = [{'time': str(row[0])[11:][:-10], 'average_internal_temp': row[1]} for row in avg_temp_query]
+        graph_data = [{'time': str(row[0])[11:16], 'average_internal_temp': row[1]} for row in avg_temp_query]
 
         return jsonify(graph_data)
     except Exception as e:
@@ -245,7 +245,7 @@ def total_power_graph_data():
             .all()
 
         # Format data for D3.js
-        graph_data = [{'time': str(row[0])[11:][:-10], 'total_power': row[1]} for row in total_power_query]
+        graph_data = [{'time': str(row[0])[11:16], 'total_power': row[1]} for row in total_power_query]
 
         return jsonify(graph_data)
     except Exception as e:
