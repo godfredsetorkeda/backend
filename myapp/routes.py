@@ -226,10 +226,9 @@ def total_power_consumption():
         total_power_queried = 0
         
         for x in range(1):
-            data = Data.query.filter_by(client_id=x).first()
+            data = Data.query.filter_by(client_id=str(x)).first()
             total_power_queried += data.voltage * data.current
-
-        total_power = dbA.session.query(dbA.func.sum(Data.voltage * Data.current)).scalar()
+            
         return jsonify({'total_power_consumption': total_power_queried})
     except Exception as e:
         return jsonify({'error': 'Failed to calculate total power consumption.'}), 500
