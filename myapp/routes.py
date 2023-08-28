@@ -224,7 +224,8 @@ def average_internal_temp_graph_data():
 def total_power_consumption():
     try:
         total_power_queried = 0
-        for x in range(1,11):
+        
+        for x in range(1):
             data = Data.query.filter_by(client_id=x).first()
             total_power_queried += data.voltage * data.current
 
